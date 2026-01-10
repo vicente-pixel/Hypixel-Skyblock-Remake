@@ -6,9 +6,7 @@ import net.swofty.type.generic.gui.inventory.item.GUIMaterial;
 
 @Getter
 public enum AchievementCategory {
-    BEDWARS("Bed Wars", "bedwars", new GUIMaterial(Material.RED_BED)),
     VAMPIREZ("VampireZ", "vampirez", new GUIMaterial(Material.WITHER_SKELETON_SKULL)),
-    SKYWARS("SkyWars", "skywars", new GUIMaterial(Material.ENDER_EYE)),
     BLITZ_SG("Blitz SG", "blitzsg", new GUIMaterial(Material.DIAMOND_SWORD)),
     THE_WALLS("The Walls", "walls", new GUIMaterial(Material.SAND)),
     PAINTBALL("Paintball Warfare", "paintball", new GUIMaterial(Material.SNOWBALL)),

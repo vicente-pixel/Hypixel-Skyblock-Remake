@@ -66,44 +66,7 @@ public class ActionCollectionAdd implements HypixelEventClass {
             if (category == null) continue;
             CollectionCategory.ItemCollection collection = category.getCollection(type);
 
-            final int finalDropAmount = dropAmount;
-            final ItemType finalType = type;
-            MathUtility.delay(() -> {
-                SkyBlockActionBar bar = SkyBlockActionBar.getFor(player);
-                int startingPriority = 5;
-                int addedAmount = finalDropAmount;
 
-                SkyBlockActionBar.DisplayReplacement existingReplacement = bar.getReplacement(SkyBlockActionBar.BarSection.DEFENSE);
-                if (existingReplacement != null) {
-                    startingPriority = existingReplacement.priority() + 1;
-                    try {
-                        addedAmount = Integer.parseInt(existingReplacement.display().substring(2, existingReplacement.display().indexOf(" "))) + finalDropAmount;
-                    } catch (NumberFormatException ignored) {}
-                }
-                if (player.getCollection().getReward(collection) != null) {
-                    bar.addReplacement(
-                            SkyBlockActionBar.BarSection.DEFENSE,
-                            new SkyBlockActionBar.DisplayReplacement(
-                                    "§2+" + addedAmount + " " + finalType.getDisplayName() +
-                                            " §7(" + StringUtility.commaify(player.getCollection().get(finalType)) +
-                                            "/" +
-                                            StringUtility.shortenNumber(player.getCollection().getReward(collection).requirement()) + ")",
-                                    20,
-                                    startingPriority
-                            )
-                    );
-                } else { //if Collection is maxed
-                    bar.addReplacement(
-                            SkyBlockActionBar.BarSection.DEFENSE,
-                            new SkyBlockActionBar.DisplayReplacement(
-                                    "§2+" + addedAmount + " " + finalType.getDisplayName() +
-                                            " §7(" + StringUtility.commaify(player.getCollection().get(finalType)) + ")",
-                                    20,
-                                    startingPriority
-                            )
-                    );
-                }
-            }, 5);
         }
     }
 }

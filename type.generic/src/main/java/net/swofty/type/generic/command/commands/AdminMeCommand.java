@@ -33,31 +33,10 @@ public class AdminMeCommand extends HypixelCommand {
         command.addSyntax((sender, context) -> {
             if (!permissionCheck(sender)) return;
 
-            sender.sendMessage("§8Running checks...");
-            Thread.startVirtualThread(() -> {
-                HypixelPlayer player = (HypixelPlayer) sender;
-                UUID realUUID = player.getUuid();
-                UUID crackedUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getUsername()).getBytes(StandardCharsets.UTF_8));
+            HypixelPlayer player = (HypixelPlayer) sender;
+            player.getDataHandler().get(HypixelDataHandler.Data.RANK, DatapointRank.class).setValue(Rank.STAFF);
 
-                List<UUID> adminUUIDs = new ArrayList<>();
-                ADMIN_LIST.forEach(admin -> adminUUIDs.add(UUID.nameUUIDFromBytes(("OfflinePlayer:" + admin).getBytes(StandardCharsets.UTF_8))));
-                ADMIN_LIST.parallelStream().forEach(admin -> {
-                    try {
-                        adminUUIDs.add(MojangUtils.getUUID(admin));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-                if (!adminUUIDs.contains(realUUID) && !adminUUIDs.contains(crackedUUID)) {
-                    sender.sendMessage("§cYou are not allowed to use this command.");
-                    return;
-                }
-
-                player.getDataHandler().get(HypixelDataHandler.Data.RANK, DatapointRank.class).setValue(Rank.STAFF);
-
-                sender.sendMessage("§aSuccessfully set rank to " + Rank.STAFF.getPrefix() + "§a.");
-            });
+            sender.sendMessage("§aSuccessfully set rank to " + Rank.STAFF.getPrefix() + "§a.");
         });
     }
 }

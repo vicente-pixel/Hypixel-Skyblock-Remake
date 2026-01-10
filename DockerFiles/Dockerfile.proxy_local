@@ -1,0 +1,39 @@
+FROM eclipse-temurin:25-jdk
+
+WORKDIR /app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y jq expect netcat-traditional && apt-get clean
+
+# Download Velocity proxy JAR (Static URL, should be cached)
+ADD https://fill-data.papermc.io/v1/objects/ef1a852bfae7397e84907837925e7ad21c6312066290edaae401b77f6f423ac3/velocity-3.4.0-SNAPSHOT-558.jar velocity.jar
+
+# Copy locally built plugin
+# We assume you have run './gradlew shadowJar' locally
+COPY velocity.extension/build/libs/SkyBlockProxy.jar plugins/SkyBlockProxy.jar
+
+# Copy configuration data
+COPY ./configuration /app/configuration_files
+
+# Run Velocity once to generate files, then shut down
+RUN expect <<EOF
+spawn java -jar velocity.jar
+expect ">"
+send "shutdown\r"
+expect eof
+EOF
+
+# Setup configuration
+RUN rm velocity.toml && \
+    cp configuration_files/velocity.toml velocity.toml && \
+    mkdir -p configuration && \
+    cp configuration_files/resources.json ./configuration/resources.json && \
+    secret=$(cat forwarding.secret) && \
+    jq --arg secret "$secret" '.["velocity-secret"] = $secret' ./configuration/resources.json > ./configuration/resources.json.tmp && \
+    mv ./configuration/resources.json.tmp ./configuration/resources.json
+
+# Expose the required port
+EXPOSE 25565
+
+# Start the Velocity proxy
+CMD ["sh", "-c", "cp forwarding.secret /app/configuration_files/forwarding.secret && java -jar velocity.jar"]

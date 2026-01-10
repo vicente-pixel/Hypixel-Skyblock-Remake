@@ -1,7 +1,6 @@
 package net.swofty.service.orchestrator;
 
 import net.swofty.commons.ServerType;
-import net.swofty.commons.bedwars.BedwarsGameType;
 import net.swofty.commons.game.Game;
 
 import java.time.Instant;
@@ -37,20 +36,6 @@ public class OrchestratorCache {
 		for (Game game : games) {
 			gamesByGameId.put(game.getGameId(), new GameWithServer(game, uuid, shortName));
 		}
-	}
-
-	/**
-	 * Finds an existing joinable game for the specified game type and map (Bedwars-specific)
-	 */
-	public static GameWithServer findExisting(BedwarsGameType gameType, String map) {
-		return findExisting(ServerType.BEDWARS_GAME, gameType.maxPlayers(), map, 1);
-	}
-
-	/**
-	 * Finds an existing joinable game for the specified game type and map with needed slots (Bedwars-specific)
-	 */
-	public static GameWithServer findExisting(BedwarsGameType gameType, String map, int neededSlots) {
-		return findExisting(ServerType.BEDWARS_GAME, gameType.maxPlayers(), map, neededSlots);
 	}
 
 	/**
@@ -92,13 +77,6 @@ public class OrchestratorCache {
 		// Prefer games with more players (closer to starting)
 		candidates.sort(Comparator.comparingInt((GameWithServer g) -> g.game().getInvolvedPlayers().size()).reversed());
 		return candidates.getFirst();
-	}
-
-	/**
-	 * Finds a server with capacity to host a new game (Bedwars-specific)
-	 */
-	public static GameServerState instantiateServer(BedwarsGameType gameType, String map) {
-		return instantiateServer(ServerType.BEDWARS_GAME, gameType.maxPlayers());
 	}
 
 	/**

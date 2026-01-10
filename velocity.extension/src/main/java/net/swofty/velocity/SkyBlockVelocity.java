@@ -94,6 +94,26 @@ public class SkyBlockVelocity {
 	@Inject
 	private ProxyServer proxy;
 
+    public static ProxyServer getServer() {
+        return server;
+    }
+
+    public static SkyBlockVelocity getPlugin() {
+        return plugin;
+    }
+
+    public static RegisteredServer getLimboServer() {
+        return limboServer;
+    }
+
+    public static boolean isShouldAuthenticate() {
+        return shouldAuthenticate;
+    }
+
+    public static boolean isSupportCrossVersion() {
+        return supportCrossVersion;
+    }
+
 	@Inject
 	public SkyBlockVelocity(ProxyServer tempServer, Logger tempLogger, @DataDirectory Path dataDirectory) {
 		plugin = this;
@@ -259,7 +279,7 @@ public class SkyBlockVelocity {
 			return;
 		}
 
-		List<BalanceConfiguration> configurations = BalanceConfigurations.configurations.get(ServerType.BEDWARS_LOBBY);
+		List<BalanceConfiguration> configurations = BalanceConfigurations.configurations.get(ServerType.PROTOTYPE_LOBBY);
 		GameManager.GameServer toSendTo = gameServers.getFirst();
 
 		for (BalanceConfiguration configuration : configurations) {

@@ -225,6 +225,10 @@ public class TestFlowManager {
             int count = json.getInt("count");
             return new ServerConfig(type, count);
         }
+
+        public int getCount() {
+            return count;
+        }
     }
 
     /**
@@ -248,6 +252,26 @@ public class TestFlowManager {
             this.players = new ArrayList<>(players);
             this.serverConfigs = new ArrayList<>(serverConfigs);
             this.startTime = System.currentTimeMillis();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getHandlerClassName() {
+            return handlerClassName;
+        }
+
+        public List<String> getPlayers() {
+            return players;
+        }
+
+        public List<ServerConfig> getServerConfigs() {
+            return serverConfigs;
+        }
+
+        public ProxyTestFlowHandler getHandler() {
+            return handler;
         }
 
         public void setHandler(ProxyTestFlowHandler handler) {

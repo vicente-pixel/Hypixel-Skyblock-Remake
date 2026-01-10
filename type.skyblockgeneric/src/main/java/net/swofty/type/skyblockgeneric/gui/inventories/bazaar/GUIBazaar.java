@@ -24,6 +24,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.swofty.type.skyblockgeneric.data.SkyBlockDataHandler;
+import net.swofty.type.skyblockgeneric.data.datapoints.DatapointCompletedBazaarTransactions;
+import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
+
+import net.swofty.type.generic.gui.HypixelSignGUI;
+import net.minestom.server.MinecraftServer;
+
 @Getter
 public class GUIBazaar extends HypixelInventoryGUI implements RefreshingGUI {
     private static final int[] SLOTS = {
@@ -44,6 +52,72 @@ public class GUIBazaar extends HypixelInventoryGUI implements RefreshingGUI {
         this.category = category;
 
         fill(ItemStackCreator.createNamedItemStack(category.getGlassItem()));
+        
+        // Bottom Row
+        set(new GUIClickableItem(45) {
+            @Override
+            public void run(InventoryPreClickEvent e, HypixelPlayer p) {
+                new HypixelSignGUI(p).open(new String[]{"", "Enter Query"})
+                        .thenAccept(query -> {
+                            if (query == null || query.isBlank()) return;
+
+                            List<ItemType> matches = new ArrayList<>();
+                            for (BazaarCategories cat : BazaarCategories.values()) {
+                                for (BazaarItemSet set : cat.getItems()) {
+                                    for (ItemType type : set.items) {
+                                        if (type.getDisplayName().toLowerCase().contains(query.toLowerCase())) {
+                                            matches.add(type);
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (matches.isEmpty()) {
+                                p.sendMessage("§cNo items found matching \"" + query + "\"");
+                                return;
+                            }
+
+                            if (matches.size() > 10) {
+                                matches = matches.subList(0, 10);
+                                p.sendMessage("§eFound many items! Showing top 10 results.");
+                            }
+
+                            BazaarItemSet searchSet = new BazaarItemSet(
+                                    ItemType.OAK_SIGN,
+                                    "Search: " + query,
+                                    matches.toArray(new ItemType[0])
+                            );
+
+                            MinecraftServer.getSchedulerManager().scheduleNextTick(() -> {
+                                new GUIBazaarItemSet(category, searchSet).open(p);
+                            });
+                        });
+            }
+
+            @Override
+            public ItemStack.Builder getItem(HypixelPlayer p) {
+                return ItemStackCreator.getStack("§aSearch", Material.OAK_SIGN, 1,
+                        "§7Find products by name!", "", "§eClick to search!");
+            }
+        });
+
+        set(new GUIClickableItem(47) {
+            @Override
+            public void run(InventoryPreClickEvent e, HypixelPlayer p) {
+                // Sell inventory logic
+            }
+
+            @Override
+            public ItemStack.Builder getItem(HypixelPlayer p) {
+                return ItemStackCreator.getStack("§aSell Inventory Now", Material.CHEST, 1,
+                        "§7Instantly sell any items in your",
+                        "§7inventory that can be sold on the",
+                        "§7Bazaar.",
+                        "",
+                        "§7§cYou don't have anything to sell!");
+            }
+        });
+
         set(GUIClickableItem.getCloseItem(49));
 
         set(new GUIClickableItem(50) {
@@ -56,18 +130,128 @@ public class GUIBazaar extends HypixelInventoryGUI implements RefreshingGUI {
             @Override
             public ItemStack.Builder getItem(HypixelPlayer p) {
                 SkyBlockPlayer player = (SkyBlockPlayer) p;
+                List<String> lore = new ArrayList<>();
+                
+                // This would ideally be fetched once and cached, but for now we'll use a placeholder 
+                // or fetch it if we can do it synchronously from a cache.
+                // For the prompt requirement, we'll try to use the most accurate info we have.
+                lore.add("§7You don't have any ongoing orders.");
+                lore.add("");
+                lore.add("§eClick to manage!");
+                
                 return ItemStackCreator.getStack("§aManage Orders",
-                        Material.BOOK, 1,
-                        "§7View your pending Bazaar orders",
-                        "§eClick to open");
+                        Material.BOOK, 1, lore);
+            }
+        });
+
+        set(new GUIClickableItem(51) {
+            @Override
+            public void run(InventoryPreClickEvent e, HypixelPlayer p) {
+            }
+
+            @Override
+            public ItemStack.Builder getItem(HypixelPlayer p) {
+                SkyBlockPlayer player = (SkyBlockPlayer) p;
+                List<String> lore = new ArrayList<>();
+                
+                var transactions = player.getSkyblockDataHandler()
+                        .get(SkyBlockDataHandler.Data.COMPLETED_BAZAAR_TRANSACTIONS, DatapointCompletedBazaarTransactions.class)
+                        .getValue().getTransactions();
+
+                if (transactions.isEmpty()) {
+                    lore.add("§7You haven't touched the Bazaar yet!");
+                } else {
+                    transactions.stream()
+                        .sorted(Comparator.comparing(DatapointCompletedBazaarTransactions.CompletedBazaarTransaction::getTimestamp).reversed())
+                        .limit(10)
+                        .forEach(tx -> {
+                            long diff = System.currentTimeMillis() - tx.getTimestamp().toEpochMilli();
+                            long days = TimeUnit.MILLISECONDS.toDays(diff);
+                            long hours = TimeUnit.MILLISECONDS.toHours(diff) % 24;
+                            long minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60;
+                            long seconds = TimeUnit.MILLISECONDS.toSeconds(diff) % 60;
+                            
+                            String timeAgo;
+                            if (days > 0) timeAgo = days + "d";
+                            else if (hours > 0) timeAgo = hours + "h";
+                            else if (minutes > 0) timeAgo = minutes + "m";
+                            else timeAgo = Math.max(1, seconds) + "s";
+                            
+                            String typeStr = "";
+                            String typeColor = "";
+                            switch(tx.getType()) {
+                                case BUY_COMPLETED: typeStr = "Instant Buy"; typeColor = "§a"; break;
+                                case SELL_COMPLETED: typeStr = "Instant Sell"; typeColor = "§6"; break;
+                                case REFUND: typeStr = "Cancelled Buy Order"; typeColor = "§7"; break; // Best guess mapping
+                                default: typeStr = "Transaction"; typeColor = "§7"; break;
+                            }
+                            
+                            if (tx.getType() == DatapointCompletedBazaarTransactions.TransactionType.REFUND) {
+                                lore.add("§8" + timeAgo + " ago §7Cancelled §cBuy Order §7of " + "§a" + StringUtility.shortenNumber(tx.getQuantity()) + "§7x " + tx.getItemName());
+                            } else {
+                                lore.add("§8" + timeAgo + " ago " + typeColor + typeStr + " §7of " + typeColor + StringUtility.shortenNumber(tx.getQuantity()) + "§7x " + tx.getItemName());
+                                lore.add(" §7for §6" + StringUtility.shortenNumber(tx.getPricePerUnit() * tx.getQuantity()) + " coins §7by " + player.getFullDisplayName());
+                            }
+                            lore.add("");
+                        });
+                }
+
+                return ItemStackCreator.getStack("§aBazaar History",
+                        Material.FILLED_MAP, 1, lore);
+            }
+        });
+
+        set(new GUIClickableItem(52) {
+            @Override
+            public void run(InventoryPreClickEvent e, HypixelPlayer p) {
+                // Settings logic
+            }
+
+            @Override
+            public ItemStack.Builder getItem(HypixelPlayer p) {
+                return ItemStackCreator.getStack("§aBazaar Settings", Material.REDSTONE_TORCH, 1,
+                        "§7View and edit your Bazaar settings.", "", "§eClick to open!");
             }
         });
     }
 
     @Override
     public void onOpen(InventoryGUIOpenEvent e) {
+        SkyBlockPlayer player = (SkyBlockPlayer) e.player();
+        
         // Tabs at top
         renderCategoryTabs();
+
+        // Update Manage Orders dynamically
+        player.getBazaarConnector().getPendingOrders().thenAccept(orders -> {
+            int active = orders.size();
+            int expired = 0; // Need a way to track expired orders separately if possible
+            double escrow = orders.stream().mapToDouble(net.swofty.type.skyblockgeneric.bazaar.BazaarConnector.BazaarOrder::getTotalValue).sum();
+            
+            set(new GUIClickableItem(50) {
+                @Override
+                public void run(InventoryPreClickEvent e, HypixelPlayer p) {
+                    new GUIBazaarOrders().open(p);
+                }
+
+                @Override
+                public ItemStack.Builder getItem(HypixelPlayer p) {
+                    List<String> lore = new ArrayList<>();
+                    if (active == 0) {
+                        lore.add("§7You don't have any ongoing orders.");
+                    } else {
+                        lore.add("§7Orders: §e" + active + (expired > 0 ? " §8(" + expired + " expired)" : ""));
+                        lore.add("");
+                        lore.add("§7Escrow: §6" + StringUtility.commaify(escrow) + " coins");
+                    }
+                    lore.add("");
+                    lore.add("§eClick to manage!");
+                    
+                    return ItemStackCreator.getStack("§aManage Orders", Material.BOOK, 1, lore);
+                }
+            });
+            updateItemStacks(getInventory(), player);
+        });
 
         long now = System.currentTimeMillis();
         CacheEntry entry = CACHE.get(category);
@@ -85,9 +269,10 @@ public class GUIBazaar extends HypixelInventoryGUI implements RefreshingGUI {
     }
 
     private void renderCategoryTabs() {
-        int idx = 0;
+        int row = 0;
         for (BazaarCategories cat : BazaarCategories.values()) {
-            int slot = idx * 9;
+            int slot = row * 9;
+            
             set(new GUIClickableItem(slot) {
                 @Override
                 public void run(InventoryPreClickEvent e, HypixelPlayer p) {
@@ -103,14 +288,14 @@ public class GUIBazaar extends HypixelInventoryGUI implements RefreshingGUI {
                             cat.getDisplayItem(), 1,
                             "§8Category", " ",
                             category == cat
-                                    ? "§aCurrently Viewing"
+                                    ? "§aCurrently viewing!"
                                     : "§eClick to view!"
                     );
                     if (category == cat) b = ItemStackCreator.enchant(b);
                     return b;
                 }
             });
-            idx++;
+            row++;
         }
         updateItemStacks(getInventory(), getPlayer());
     }

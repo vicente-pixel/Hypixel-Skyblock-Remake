@@ -67,11 +67,11 @@ public class GUIBazaarOrderAmountSelection extends HypixelInventoryGUI {
 
     private void buildInstantUI(SkyBlockPlayer p) {
         // exactly the 4 buttons you already liked (One, Stack, All, Custom)
-        addButton(9, 1, "One", "Buy one unit", 1, p);
-        addButton(11, Math.min(64, maxAmount), "Stack",
+        addButton(10, 1, "One", "Buy one unit", 1, p);
+        addButton(12, Math.min(64, maxAmount), "Stack",
                 "Buy a stack!", Math.min(64, maxAmount), p);
-        addButton(13, maxAmount, "All", "Fill my inventory!", maxAmount, p);
-        addCustom(15, p);
+        addButton(14, maxAmount, "All", "Fill my inventory!", maxAmount, p);
+        addCustom(16, p);
     }
 
     private void buildLimitUI(SkyBlockPlayer p) {
@@ -80,10 +80,10 @@ public class GUIBazaarOrderAmountSelection extends HypixelInventoryGUI {
         int medium = Math.min(160, maxAmount);
         int large  = Math.min(1024,maxAmount);
 
-        addLimitButton(9, small, "Buy a stack!",      "Amount: " + small + "×", p);
-        addLimitButton(11, medium, "Buy a big stack!","Amount: " + medium + "×", p);
-        addLimitButton(13, large, "Buy a thousand!",  "Amount: " + large + "×", p);
-        addCustom(15, p);
+        addLimitButton(10, small, "Buy a stack!",      "Amount: " + small + "×", p);
+        addLimitButton(12, medium, "Buy a big stack!","Amount: " + medium + "×", p);
+        addLimitButton(14, large, "Buy a thousand!",  "Amount: " + large + "×", p);
+        addCustom(16, p);
     }
 
     private void addButton(int slot, int qty, String title, String subtitle, int amount, SkyBlockPlayer p) {

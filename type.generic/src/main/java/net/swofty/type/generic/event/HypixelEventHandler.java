@@ -60,11 +60,34 @@ public class HypixelEventHandler {
         cachedCustomEvents.forEach(skyBlockEvent -> {
             try {
                 Class<? extends Event> eventType = (Class<? extends Event>) skyBlockEvent.method.getParameterTypes()[0];
-                customEventNode.addListener(eventType, (event) -> {
-                    try {
-                        skyBlockEvent.method.invoke(skyBlockEvent.instance, event);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new RuntimeException(e);
+                customEventNode.addListener(eventType, (rawEvent) -> {
+                    Event concreteEvent = eventType.cast(rawEvent);
+
+                    if (concreteEvent instanceof PlayerEvent event
+                            && skyBlockEvent.hypixelEvent.requireDataLoaded()
+                            && (HypixelDataHandler.getUser(event.getPlayer()) == null
+                                || (HypixelConst.isIslandServer() &&
+                                    !((HypixelPlayer) event.getPlayer()).isReadyForEvents()))) {
+                        Scheduler scheduler = MinecraftServer.getSchedulerManager();
+
+                        scheduler.submitTask(() -> {
+                            Player player = event.getPlayer();
+                            if (!player.isOnline()) return TaskSchedule.stop();
+                            if (HypixelDataHandler.getUser(player) == null) return TaskSchedule.millis(2);
+                            if (HypixelConst.isIslandServer() &&
+                                    !((HypixelPlayer) player).isReadyForEvents()) return TaskSchedule.millis(2);
+
+                            runEvent(skyBlockEvent.hypixelEvent, skyBlockEvent.method, skyBlockEvent.instance, concreteEvent);
+                            return TaskSchedule.stop();
+                        });
+                    } else {
+                        try {
+                            runEvent(skyBlockEvent.hypixelEvent, skyBlockEvent.method, skyBlockEvent.instance, concreteEvent);
+                        } catch (Exception ex) {
+                            Logger.error(ex, "Exception occurred while running event {} with event type {}",
+                                    skyBlockEvent.method.getClass().getSimpleName(),
+                                    concreteEvent.getClass().getSimpleName());
+                        }
                     }
                 });
             } catch (Exception e) {

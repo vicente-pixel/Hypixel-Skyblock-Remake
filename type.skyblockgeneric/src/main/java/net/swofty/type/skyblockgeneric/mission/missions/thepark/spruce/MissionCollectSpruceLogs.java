@@ -4,6 +4,7 @@ import net.minestom.server.event.player.PlayerTickEvent;
 import net.minestom.server.item.Material;
 import net.swofty.type.generic.event.EventNodes;
 import net.swofty.type.generic.event.HypixelEvent;
+import net.swofty.type.skyblockgeneric.data.SkyBlockDataHandler;
 import net.swofty.type.skyblockgeneric.event.custom.CustomBlockBreakEvent;
 import net.swofty.type.skyblockgeneric.item.SkyBlockItem;
 import net.swofty.type.skyblockgeneric.mission.MissionData;
@@ -24,6 +25,8 @@ public class MissionCollectSpruceLogs extends SkyBlockProgressMission {
 	@HypixelEvent(node = EventNodes.CUSTOM, requireDataLoaded = false)
 	public void onTick(PlayerTickEvent event) {
 		SkyBlockPlayer player = (SkyBlockPlayer) event.getPlayer();
+		if (SkyBlockDataHandler.getUser(player) == null) return;
+
 		if (testTimes.containsKey(player.getUuid())) {
 			long lastTime = testTimes.get(player.getUuid());
 			if (System.currentTimeMillis() - lastTime < 650) {

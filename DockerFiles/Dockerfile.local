@@ -1,0 +1,39 @@
+FROM eclipse-temurin:25-jdk
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y jq unzip screen && apt-get clean
+
+# Copy configuration (Cached layer)
+COPY ./configuration /app/configuration_files
+
+# Setup Configuration (Cached layer)
+RUN mkdir -p configuration && \
+    cp configuration_files/resources.json ./configuration/resources.json && \
+    mkdir -p ./configuration/skyblock/islands && \
+    cp configuration_files/world.zip ./world.zip && \
+    unzip world.zip -d ./configuration && rm world.zip && \
+    mv ./configuration/hypixel_hub ./configuration/skyblock/islands/hypixel_skyblock_hub && \
+    mv ./configuration/hypixel_island_template ./configuration/skyblock/islands/hypixel_skyblock_island_template && \
+    cp configuration_files/NanoLimbo-1.10.2.jar ./NanoLimbo-1.10.2.jar && \
+    cp configuration_files/settings.yml ./settings.yml && \
+    cp -a configuration_files/skyblock/. configuration/skyblock/ && \
+    cp configuration_files/entrypoint.sh ./entrypoint.sh && \
+    chmod +x entrypoint.sh && \
+    sed -i "s/ip: 'localhost'/ip: '0.0.0.0'/" ./settings.yml
+
+# Expose ports
+EXPOSE 25565 65535 8080 20000
+
+# COPY JARS (This is the only layer that changes frequently)
+# We assume you have run './gradlew shadowJar' locally
+COPY loader/build/libs/HypixelCore.jar ./HypixelCore.jar
+COPY service.api/build/libs/ServiceAPI.jar ./ServiceAPI.jar
+COPY service.auctionhouse/build/libs/ServiceAuctionHouse.jar ./ServiceAuctionHouse.jar
+COPY service.bazaar/build/libs/ServiceBazaar.jar ./ServiceBazaar.jar
+COPY service.itemtracker/build/libs/ServiceItemTracker.jar ./ServiceItemTracker.jar
+COPY service.datamutex/build/libs/ServiceDataMutex.jar ./ServiceDataMutex.jar
+COPY service.party/build/libs/ServiceParty.jar ./ServiceParty.jar
+
+CMD ["sh", "entrypoint.sh"]

@@ -14,10 +14,8 @@ public enum CustomWorlds {
 	SKYBLOCK_BACKWATER_BAYOU("hypixel_skyblock_backwater_bayou"),
 	SKYBLOCK_JERRYS_WORKSHOP("hypixel_skyblock_jerrys_workshop"),
 	SKYBLOCK_DUNGEON_HUB("hypixel_skyblock_dungeon_hub"),
-	PROTOTYPE_LOBBY("hypixel_prototype_lobby"),
-	BEDWARS_LOBBY("hypixel_bedwars_lobby"),
-	MURDER_MYSTERY_LOBBY("hypixel_murder_mystery_lobby"),
-	SKYWARS_LOBBY("hypixel_skywars_lobby"),
+    PROTOTYPE_LOBBY("hypixel_prototype_lobby"),
+    MURDER_MYSTERY_LOBBY("hypixel_murdermystery_lobby"),
 	;
 
 	private final String folderName;

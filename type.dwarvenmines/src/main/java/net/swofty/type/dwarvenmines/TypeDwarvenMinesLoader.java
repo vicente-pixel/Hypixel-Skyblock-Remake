@@ -14,7 +14,6 @@ import net.minestom.server.world.biome.BiomeEffects;
 import net.swofty.commons.CustomWorlds;
 import net.swofty.commons.ServerType;
 import net.swofty.commons.ServiceType;
-import net.swofty.commons.bedwars.map.BedWarsMapsConfig;
 import net.swofty.proxyapi.redis.ProxyToClient;
 import net.swofty.proxyapi.redis.ServiceToClient;
 import net.swofty.type.dwarvenmines.gui.GUIGemstoneGrinder;

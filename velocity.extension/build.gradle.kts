@@ -4,6 +4,7 @@ plugins {
     java
     application
     `maven-publish`
+    id("io.freefair.lombok") version "9.1.0"
     id("com.gradleup.shadow") version "9.3.1"
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.3"
 }
@@ -27,6 +28,9 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
     compileOnly(files("velocity-proxy-3.4.0-SNAPSHOT.jar"))
+
+    compileOnly("org.projectlombok:lombok:1.18.36")
+    annotationProcessor("org.projectlombok:lombok:1.18.36")
 
     implementation("com.github.Swofty-Developments:AtlasRedisAPI:1.1.3")
     // implementation("net.swofty:AtlasRedisAPI:1.1.4")

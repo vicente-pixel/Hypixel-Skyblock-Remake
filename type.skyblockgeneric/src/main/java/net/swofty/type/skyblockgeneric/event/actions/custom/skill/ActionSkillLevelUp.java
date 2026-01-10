@@ -1,5 +1,7 @@
 package net.swofty.type.skyblockgeneric.event.actions.custom.skill;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.swofty.commons.StringUtility;
@@ -30,6 +32,8 @@ public class ActionSkillLevelUp implements HypixelEventClass {
 		if (oldLevel == newLevel) return;
 
 		String oldLevelDisplay = StringUtility.getAsRomanNumeral(oldLevel);
+
+		player.playSound(Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1f, 1f));
 
 		player.sendMessage("§3§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 		player.sendMessage(Component.text("  §b§lSKILL LEVEL UP §3" + skillCategory + " §8" +

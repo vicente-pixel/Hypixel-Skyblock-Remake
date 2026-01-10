@@ -1,3 +1,65 @@
+# Stage 1: Build the project
+FROM eclipse-temurin:25-jdk AS builder
+
+WORKDIR /src
+
+# Copy gradle wrapper and settings
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY gradle.properties .
+
+# Copy all source code
+COPY anticheat anticheat
+COPY commons commons
+COPY dungeons dungeons
+COPY loader loader
+COPY packer packer
+COPY proxy.api proxy.api
+COPY pvp pvp
+COPY spark spark
+COPY velocity.extension velocity.extension
+
+# Copy services
+COPY service.api service.api
+COPY service.auctionhouse service.auctionhouse
+COPY service.bazaar service.bazaar
+COPY service.darkauction service.darkauction
+COPY service.datamutex service.datamutex
+COPY service.friend service.friend
+COPY service.generic service.generic
+COPY service.itemtracker service.itemtracker
+COPY service.orchestrator service.orchestrator
+COPY service.party service.party
+
+# Copy types
+COPY type.backwaterbayou type.backwaterbayou
+COPY type.crimsonisle type.crimsonisle
+COPY type.deepcaverns type.deepcaverns
+COPY type.dungeonhub type.dungeonhub
+COPY type.dwarvenmines type.dwarvenmines
+COPY type.galatea type.galatea
+COPY type.generic type.generic
+COPY type.goldmine type.goldmine
+COPY type.hub type.hub
+COPY type.island type.island
+COPY type.jerrysworkshop type.jerrysworkshop
+COPY type.lobby type.lobby
+COPY type.murdermysteryconfigurator type.murdermysteryconfigurator
+COPY type.murdermysterygame type.murdermysterygame
+COPY type.murdermysterylobby type.murdermysterylobby
+COPY type.prototypelobby type.prototypelobby
+COPY type.skyblockgeneric type.skyblockgeneric
+COPY type.spidersden type.spidersden
+COPY type.theend type.theend
+COPY type.thefarmingislands type.thefarmingislands
+COPY type.thepark type.thepark
+
+# Build the jars
+RUN ./gradlew shadowJar --no-daemon
+
+# Stage 2: Runtime
 FROM eclipse-temurin:25-jdk
 
 WORKDIR /app
@@ -5,16 +67,14 @@ WORKDIR /app
 # Install unzip for extracting files
 RUN apt-get update && apt-get install -y jq unzip screen && apt-get clean
 
-# Download SkyBlockCore.jar
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/HypixelCore.jar HypixelCore.jar
-
-# Download Services
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/ServiceAPI.jar ./ServiceAPI.jar
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/ServiceAuctionHouse.jar ./ServiceAuctionHouse.jar
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/ServiceBazaar.jar ./ServiceBazaar.jar
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/ServiceItemTracker.jar ./ServiceItemTracker.jar
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/ServiceDataMutex.jar ./ServiceDataMutex.jar
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/ServiceParty.jar ./ServiceParty.jar
+# Copy built JARs from builder stage
+COPY --from=builder /src/loader/build/libs/HypixelCore.jar ./HypixelCore.jar
+COPY --from=builder /src/service.api/build/libs/ServiceAPI.jar ./ServiceAPI.jar
+COPY --from=builder /src/service.auctionhouse/build/libs/ServiceAuctionHouse.jar ./ServiceAuctionHouse.jar
+COPY --from=builder /src/service.bazaar/build/libs/ServiceBazaar.jar ./ServiceBazaar.jar
+COPY --from=builder /src/service.itemtracker/build/libs/ServiceItemTracker.jar ./ServiceItemTracker.jar
+COPY --from=builder /src/service.datamutex/build/libs/ServiceDataMutex.jar ./ServiceDataMutex.jar
+COPY --from=builder /src/service.party/build/libs/ServiceParty.jar ./ServiceParty.jar
 
 # Copy configuration data
 COPY ./configuration /app/configuration_files

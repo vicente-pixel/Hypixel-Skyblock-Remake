@@ -37,7 +37,7 @@ services:
   proxy:
     build:
       context: .
-      dockerfile: "./DockerFiles/Dockerfile.proxy"
+      dockerfile: "./DockerFiles/Dockerfile.proxy_local"
     container_name: hypixel_proxy
     ports:
       - "25565:25565"
@@ -60,7 +60,7 @@ services:
   game_server_builder:
     build:
       context: .
-      dockerfile: "./DockerFiles/Dockerfile.game_server"
+      dockerfile: "./DockerFiles/Dockerfile.local"
     image: game_server_prepared
     container_name: game_server_builder
     volumes:

@@ -9,6 +9,8 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.component.DataComponents;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.event.inventory.InventoryCloseEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.InventoryType;
@@ -365,7 +367,10 @@ public abstract class SkyBlockShopGUI extends HypixelInventoryGUI {
 		);
 
 		player.getInventory().setItemStack(e.getSlot(), ItemStack.AIR);
-		updateThis(player);
+		MinecraftServer.getSchedulerManager().submitTask(() -> {
+			updateThis(player);
+			return TaskSchedule.stop();
+		});
 	}
 
 	public abstract void initializeShopItems();

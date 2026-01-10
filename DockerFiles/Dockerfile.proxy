@@ -1,3 +1,65 @@
+# Stage 1: Build the project
+FROM eclipse-temurin:25-jdk AS builder
+
+WORKDIR /src
+
+# Copy gradle wrapper and settings
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY gradle.properties .
+
+# Copy all source code
+COPY anticheat anticheat
+COPY commons commons
+COPY dungeons dungeons
+COPY loader loader
+COPY packer packer
+COPY proxy.api proxy.api
+COPY pvp pvp
+COPY spark spark
+COPY velocity.extension velocity.extension
+
+# Copy services
+COPY service.api service.api
+COPY service.auctionhouse service.auctionhouse
+COPY service.bazaar service.bazaar
+COPY service.darkauction service.darkauction
+COPY service.datamutex service.datamutex
+COPY service.friend service.friend
+COPY service.generic service.generic
+COPY service.itemtracker service.itemtracker
+COPY service.orchestrator service.orchestrator
+COPY service.party service.party
+
+# Copy types
+COPY type.backwaterbayou type.backwaterbayou
+COPY type.crimsonisle type.crimsonisle
+COPY type.deepcaverns type.deepcaverns
+COPY type.dungeonhub type.dungeonhub
+COPY type.dwarvenmines type.dwarvenmines
+COPY type.galatea type.galatea
+COPY type.generic type.generic
+COPY type.goldmine type.goldmine
+COPY type.hub type.hub
+COPY type.island type.island
+COPY type.jerrysworkshop type.jerrysworkshop
+COPY type.lobby type.lobby
+COPY type.murdermysteryconfigurator type.murdermysteryconfigurator
+COPY type.murdermysterygame type.murdermysterygame
+COPY type.murdermysterylobby type.murdermysterylobby
+COPY type.prototypelobby type.prototypelobby
+COPY type.skyblockgeneric type.skyblockgeneric
+COPY type.spidersden type.spidersden
+COPY type.theend type.theend
+COPY type.thefarmingislands type.thefarmingislands
+COPY type.thepark type.thepark
+
+# Build the jars
+RUN ./gradlew shadowJar --no-daemon
+
+# Stage 2: Runtime
 FROM eclipse-temurin:25-jdk
 
 WORKDIR /app
@@ -9,8 +71,8 @@ RUN apt-get update && apt-get install -y jq expect netcat-traditional && apt-get
 # Download Velocity proxy JAR
 ADD https://fill-data.papermc.io/v1/objects/ef1a852bfae7397e84907837925e7ad21c6312066290edaae401b77f6f423ac3/velocity-3.4.0-SNAPSHOT-558.jar velocity.jar
 
-# Download SkyBlockProxy.jar
-ADD https://github.com/Swofty-Developments/HypixelSkyBlock/releases/download/latest/SkyBlockProxy.jar plugins/SkyBlockProxy.jar
+# Copy SkyBlockProxy.jar from builder
+COPY --from=builder /src/velocity.extension/build/libs/SkyBlockProxy.jar plugins/SkyBlockProxy.jar
 
 # Copy configuration data
 COPY ./configuration /app/configuration_files

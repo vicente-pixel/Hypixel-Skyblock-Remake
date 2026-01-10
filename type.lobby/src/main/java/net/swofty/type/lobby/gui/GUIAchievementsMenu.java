@@ -38,11 +38,9 @@ public class GUIAchievementsMenu extends HypixelInventoryGUI {
         set(createCategoryItem(22, AchievementCategory.COPS_AND_CRIMS, handler));
         set(createCategoryItem(23, AchievementCategory.UHC_CHAMPIONS, handler));
         set(createCategoryItem(24, AchievementCategory.WARLORDS, handler));
-        set(createCategoryItem(25, AchievementCategory.SKYWARS, handler));
 
         set(createCategoryItem(28, AchievementCategory.SMASH_HEROES, handler));
         set(createCategoryItem(29, AchievementCategory.SPEED_UHC, handler));
-        set(createCategoryItem(30, AchievementCategory.BEDWARS, handler));
         set(createCategoryItem(31, AchievementCategory.MURDER_MYSTERY, handler));
         set(createCategoryItem(32, AchievementCategory.BUILD_BATTLE, handler));
         set(createCategoryItem(33, AchievementCategory.DUELS, handler));

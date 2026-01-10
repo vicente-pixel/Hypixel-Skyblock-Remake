@@ -18,14 +18,6 @@ public enum GameType {
             "§7build your private islands and",
             "§7collect all the items!"),
 
-    BED_WARS("Bed Wars §6§lv1.10 - DREAM MODE & QOL",
-            Material.RED_BED,
-            Category.TEAM_SURVIVAL,
-            ServerType.BEDWARS_LOBBY,
-            "§7Protect your bed along with your",
-            "§7teammates and destroy enemy beds",
-            "§7to win!"),
-
     PROTOTYPE("Prototype §c§lDISASTERS RELEASED TO ARCADE!",
             Material.ANVIL,
             Category.CASUAL_GAMES,
@@ -46,16 +38,6 @@ public enum GameType {
             "§7lot of Innocents. Can you survive",
             "§7this tense social game of betrayal",
             "§7and murder?"),
-
-    SKYWARS("SkyWars §d§lOLD EMBLEMS + QOL CHANGES",
-            Material.ENDER_EYE,
-            Category.SURVIVAL,
-            ServerType.SKYWARS_LOBBY,
-            "§7Hypixel's take on the SkyWars",
-            "§7gamemode. Featuring the angel of",
-            "§7Death, Soul Well, and §cINSANE MODE§7!",
-            "§7Play on your own or in teams."
-            ),
     ;
 
     private final String displayName;

@@ -72,7 +72,7 @@ public class MobGraveyardZombie extends BestiaryMob implements RegionPopulator {
         return ItemStatistics.builder()
                 .withBase(ItemStatistic.HEALTH, 100D)
                 .withBase(ItemStatistic.DAMAGE, 5D)
-                .withBase(ItemStatistic.SPEED, 100D)
+                .withBase(ItemStatistic.SPEED, 30D)
                 .build();
     }
 
