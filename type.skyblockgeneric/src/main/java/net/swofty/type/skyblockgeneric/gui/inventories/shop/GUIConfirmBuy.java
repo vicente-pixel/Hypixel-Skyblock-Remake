@@ -37,7 +37,7 @@ public class GUIConfirmBuy extends HypixelInventoryGUI {
                     skyBlockPlayer.addAndUpdateItem(item);
                     skyBlockPlayer.removeCoins(price);
 
-                    skyBlockPlayer.sendMessage("§aYou bought " + item.getDisplayName() + " §afor §6" + price + " Coins§a!");
+                    skyBlockPlayer.sendMessage("§aYou bought " + item.getDisplayName() + " §afor §6" + StringUtility.commaify(price) + " Coins§a!");
                 } else {
                     skyBlockPlayer.sendMessage("§4You don't have enough coins!");
                 }

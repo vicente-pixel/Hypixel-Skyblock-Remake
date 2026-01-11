@@ -291,8 +291,12 @@ public class ItemLore {
 			AbilityComponent abilityComponent = item.getComponent(AbilityComponent.class);
 
 			abilityComponent.getAbilities().forEach(ability -> {
-				addLoreLine("§6Ability: " + ability.getName() + "  §e§l" +
-						ability.getActivation().getDisplay());
+				String activationDisplay = ability.getActivation().getDisplay();
+				if (activationDisplay.isEmpty()) {
+					addLoreLine("§6Ability: " + ability.getName());
+				} else {
+					addLoreLine("§6Ability: " + ability.getName() + "  §e§l" + activationDisplay);
+				}
 				for (String line : StringUtility.splitByWordAndLength(ability.getDescription().apply(player, item), 40))
 					addLoreLine("§7" + line);
 
@@ -425,4 +429,3 @@ public class ItemLore {
 				.decorations(Collections.singleton(TextDecoration.ITALIC), false));
 	}
 }
-

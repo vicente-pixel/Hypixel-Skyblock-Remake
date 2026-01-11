@@ -110,6 +110,27 @@ public class StringUtility {
 		return String.valueOf(number); // Fallback, should not be reached
 	}
 
+	public static String shortenNumberLowerK(double number) {
+		if (number < 1000) return String.valueOf((int) number);
+		String[] units = new String[]{"k", "M", "B"};
+		for (int i = units.length - 1; i >= 0; i--) {
+			double unitValue = Math.pow(1000, i + 1);
+			if (number >= unitValue) {
+				return String.format("%.1f%s", number / unitValue, units[i]);
+			}
+		}
+		return String.valueOf(number); // Fallback, should not be reached
+	}
+
+	public static String formatPurseAmount(double amount) {
+		if (amount < 1000) {
+			DecimalFormat df = new DecimalFormat("0.0");
+			df.setRoundingMode(RoundingMode.DOWN);
+			return df.format(amount);
+		}
+		return commaify(amount);
+	}
+
 	public static String formatTimeLeft(long millis) {
 		StringBuilder sb = new StringBuilder();
 		long days = TimeUnit.MILLISECONDS.toDays(millis);

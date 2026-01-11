@@ -18,7 +18,7 @@ items:
     material: GOLDEN_SWORD
     rarity: LEGENDARY
     lore:
-      - "§6Ability: Greed §e§lPASSIVE"
+      - "§6Ability: Greed"
       - "§7The §c❁ Strength §7and §c❁ Damage §7bonus"
       - "§7of this item is dependent on the"
       - "§7price paid for it at the §5Dark"

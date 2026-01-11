@@ -151,8 +151,8 @@ public class GUIBankerDeposit extends HypixelInventoryGUI {
                     player.getUsername()
             ));
 
-            player.sendMessage("§aYou have deposited §6" + StringUtility.decimalify(amount, 1) + " coins§a! You now have §6" +
-                    StringUtility.decimalify(bankData.getAmount(), 1)
+            player.sendMessage("§aYou have deposited §6" + StringUtility.shortenNumberLowerK(amount) + " coins§a! You now have §6" +
+                    StringUtility.shortenNumberLowerK(bankData.getAmount())
                     + " coins§a in your account.");
             return;
         }
@@ -178,8 +178,8 @@ public class GUIBankerDeposit extends HypixelInventoryGUI {
                     latestBankData.addTransaction(new DatapointBankData.Transaction(
                             System.currentTimeMillis(), amount, player.getUsername()));
 
-                    player.sendMessage("§aYou have deposited §6" + StringUtility.decimalify(amount, 1) +
-                            " coins§a! You now have §6" + StringUtility.decimalify(latestBankData.getAmount(), 1) +
+                    player.sendMessage("§aYou have deposited §6" + StringUtility.shortenNumberLowerK(amount) +
+                            " coins§a! You now have §6" + StringUtility.shortenNumberLowerK(latestBankData.getAmount()) +
                             " coins§a in your account.");
 
                     return latestBankData; // Return modified data to be propagated to all servers

@@ -19,7 +19,7 @@ public class ActionRegionChangeDisplay implements HypixelEventClass {
             SkyBlockActionBar.getFor(player).addReplacement(
                     SkyBlockActionBar.BarSection.DEFENSE,
                     new SkyBlockActionBar.DisplayReplacement(
-                            event.getTo().getColor() + " ⏣ " + event.getTo().getName(),
+                            "§7 ⏣ " + event.getTo().getColor() + event.getTo().getName(),
                             20,
                             2
                     )

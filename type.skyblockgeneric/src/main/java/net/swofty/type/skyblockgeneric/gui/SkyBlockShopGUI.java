@@ -210,7 +210,7 @@ public abstract class SkyBlockShopGUI extends HypixelInventoryGUI {
 				}
 
 				player.addAndUpdateItem(new SkyBlockItem(itemStack.build()));
-				player.playSuccessSound();
+				player.playSound(Sound.sound(Key.key("block.note_block.pling"), Sound.Source.PLAYER, 1.0f, 2.0f));
 				player.getShoppingData().popBuyback();
 				player.getSkyblockDataHandler().get(net.swofty.type.skyblockgeneric.data.SkyBlockDataHandler.Data.COINS, DatapointDouble.class).setValue(playerCoins - value);
 				updateThis(player);
@@ -361,6 +361,7 @@ public abstract class SkyBlockShopGUI extends HypixelInventoryGUI {
 		player.getSkyblockDataHandler().get(SkyBlockDataHandler.Data.COINS, DatapointDouble.class).setValue(
 				player.getSkyblockDataHandler().get(SkyBlockDataHandler.Data.COINS, DatapointDouble.class).getValue() + sellPrice
 		);
+		player.playSound(Sound.sound(Key.key("block.note_block.pling"), Sound.Source.PLAYER, 1.0f, 2.0f));
 		player.sendMessage(
 				"§aYou sold §f" + StringUtility.getTextFromComponent(stack.get(DataComponents.CUSTOM_NAME)) + "§a for §6"
 						+ StringUtility.commaify(sellPrice) + " Coin" + (sellPrice != 1 ? "s" : "") + "§a!"

@@ -24,6 +24,7 @@ import net.swofty.type.skyblockgeneric.region.mining.handler.SkyBlockMiningHandl
 import net.swofty.type.skyblockgeneric.user.SkyBlockPlayer;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ActionRegionBlockBreak implements HypixelEventClass {
 
@@ -139,36 +140,10 @@ public class ActionRegionBlockBreak implements HypixelEventClass {
                 } else if (player.getSkyBlockExperience().getLevel().asInt() >= 6) {
                     player.addAndUpdateItem(dropItem);
                 } else {
-                    // Determine nearest air block between ore and player
                     Pos orePos = event.getBlockPosition().asPos();
-                    Pos playerPos = player.getPosition();
-
-                    Pos[] offsets = {
-                            new Pos(1, 0, 0), new Pos(-1, 0, 0),
-                            new Pos(0, 1, 0), new Pos(0, -1, 0),
-                            new Pos(0, 0, 1), new Pos(0, 0, -1)
-                    };
-
-                    Pos nearestAirBlock = null;
-                    double closestDistanceSquared = Double.MAX_VALUE;
-
-                    for (Pos offset : offsets) {
-                        Pos adjacentPos = orePos.add(offset);
-                        Block block2 = player.getInstance().getBlock(adjacentPos);
-
-                        if (block2.isAir()) {
-                            double distanceSquared = adjacentPos.distanceSquared(playerPos);
-                            if (distanceSquared < closestDistanceSquared) {
-                                closestDistanceSquared = distanceSquared;
-                                nearestAirBlock = adjacentPos;
-                            }
-                        }
-                    }
-
-                    // Use the nearest air block or fallback to default position
-                    Pos dropPos = (nearestAirBlock != null) ? nearestAirBlock.add(0.5, 0.5, 0.5) : orePos.add(0.5, 1.5, 0.5);
-
-                    // Spawn the item
+                    double offsetX = ThreadLocalRandom.current().nextDouble(-0.25, 0.25);
+                    double offsetZ = ThreadLocalRandom.current().nextDouble(-0.25, 0.25);
+                    Pos dropPos = orePos.add(0.5 + offsetX, 0.7, 0.5 + offsetZ);
                     DroppedItemEntityImpl droppedItem = new DroppedItemEntityImpl(dropItem, player);
                     droppedItem.setInstance(player.getInstance(), dropPos);
                     droppedItem.addViewer(player);
@@ -177,4 +152,3 @@ public class ActionRegionBlockBreak implements HypixelEventClass {
         }
     }
 }
-

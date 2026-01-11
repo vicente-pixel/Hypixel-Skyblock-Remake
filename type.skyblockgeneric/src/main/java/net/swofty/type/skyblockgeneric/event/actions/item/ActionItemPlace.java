@@ -2,6 +2,7 @@ package net.swofty.type.skyblockgeneric.event.actions.item;
 
 import lombok.SneakyThrows;
 import net.minestom.server.event.player.PlayerBlockPlaceEvent;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.swofty.type.generic.event.EventNodes;
 import net.swofty.type.generic.event.HypixelEvent;
@@ -22,8 +23,14 @@ public class ActionItemPlace implements HypixelEventClass {
         SkyBlockPlayer player = (SkyBlockPlayer) event.getPlayer();
 
         if (item.hasComponent(PlaceEventComponent.class)) {
+            Block originalBlock = event.getBlock();
             PlaceEventComponent placeEvent = item.getComponent(PlaceEventComponent.class);
             placeEvent.handlePlace(event, player, item);
+            if (!event.isCancelled()
+                    && !item.hasComponent(PlaceableComponent.class)
+                    && event.getBlock().equals(originalBlock)) {
+                event.setCancelled(true);
+            }
             return;
         }
 

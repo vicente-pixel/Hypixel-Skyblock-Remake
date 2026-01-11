@@ -38,11 +38,7 @@ public class MurderMysteryGameScoreboard {
                 for (MurderMysteryPlayer player : game.getPlayers()) {
                     if (player.getInstance() == null) continue;
 
-                if (sidebarCache.containsKey(player.getUuid())) {
-                    sidebarCache.get(player.getUuid()).removeViewer(player);
-                }
-
-                Sidebar sidebar = new Sidebar(Component.text(getSidebarName(animationFrame)));
+                    Sidebar sidebar = getOrCreateSidebar(player, Component.text(getSidebarName(animationFrame)));
 
                 addLine("§7" + new SimpleDateFormat("MM/dd/yy").format(new Date()) + " §8" + HypixelConst.getServerName(), sidebar);
                 addLine("§7 ", sidebar);
@@ -158,8 +154,6 @@ public class MurderMysteryGameScoreboard {
                 addLine("§7 ", sidebar);
                 addLine("§ewww.hypixel.net", sidebar);
 
-                sidebar.addViewer(player);
-                sidebarCache.put(player.getUuid(), sidebar);
                 }
             }
             return TaskSchedule.tick(5);
@@ -197,6 +191,25 @@ public class MurderMysteryGameScoreboard {
             sidebar.updateLineScore(existingLine.getId(), existingLine.getLine() + 1);
         }
         sidebar.createLine(new Sidebar.ScoreboardLine(UUID.randomUUID().toString(), Component.text(text), 0));
+    }
+
+    private static Sidebar getOrCreateSidebar(HypixelPlayer player, Component title) {
+        Sidebar sidebar = sidebarCache.get(player.getUuid());
+        if (sidebar == null) {
+            sidebar = new Sidebar(title);
+            sidebar.addViewer(player);
+            sidebarCache.put(player.getUuid(), sidebar);
+        } else {
+            sidebar.setTitle(title);
+            clearLines(sidebar);
+        }
+        return sidebar;
+    }
+
+    private static void clearLines(Sidebar sidebar) {
+        for (Sidebar.ScoreboardLine existingLine : sidebar.getLines()) {
+            sidebar.removeLine(existingLine.getId());
+        }
     }
 
     private static String getSidebarName(int counter) {
