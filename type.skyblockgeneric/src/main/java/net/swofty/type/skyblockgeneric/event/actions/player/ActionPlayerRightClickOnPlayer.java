@@ -6,6 +6,7 @@ import net.swofty.type.generic.event.EventNodes;
 import net.swofty.type.generic.event.HypixelEvent;
 import net.swofty.type.generic.event.HypixelEventClass;
 import net.swofty.type.skyblockgeneric.gui.inventories.GUIViewPlayerProfile;
+import net.swofty.type.skyblockgeneric.trading.TradeManager;
 import net.swofty.type.skyblockgeneric.user.SkyBlockPlayer;
 
 public class ActionPlayerRightClickOnPlayer implements HypixelEventClass {
@@ -15,6 +16,10 @@ public class ActionPlayerRightClickOnPlayer implements HypixelEventClass {
         final SkyBlockPlayer player = (SkyBlockPlayer) event.getPlayer();
 
         if (event.getTarget() instanceof SkyBlockPlayer skyBlockPlayer) {
+            if (player.isSneaking()) {
+                TradeManager.sendTradeRequest(player, skyBlockPlayer);
+                return;
+            }
             new GUIViewPlayerProfile(skyBlockPlayer).open(player);
         }
     }

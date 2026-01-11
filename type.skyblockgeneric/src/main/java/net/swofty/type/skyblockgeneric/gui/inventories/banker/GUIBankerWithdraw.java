@@ -109,22 +109,22 @@ public class GUIBankerWithdraw extends HypixelInventoryGUI {
             @Override
             public HypixelInventoryGUI onQueryFinish(String query, HypixelPlayer p) {
                 SkyBlockPlayer player = (SkyBlockPlayer) p;
-                try {
-                    double amount = Double.parseDouble(query);
-                    if (amount > bankBalance) {
-                        player.sendMessage("§cYou do not have that many coins to withdraw!");
-                        return null;
-                    }
-                    if (amount <= 0) {
-                        player.sendMessage("§cYou cannot withdraw that amount!");
-                        return null;
-                    }
-
-                    player.closeInventory();
-                    attemptWithdrawal(player, amount);
-                } catch (NumberFormatException ex) {
+                Double amount = StringUtility.parseNumberWithSuffix(query);
+                if (amount == null) {
                     player.sendMessage("§cThat is not a valid number!");
+                    return null;
                 }
+                if (amount > bankBalance) {
+                    player.sendMessage("§cYou do not have that many coins to withdraw!");
+                    return null;
+                }
+                if (amount <= 0) {
+                    player.sendMessage("§cYou cannot withdraw that amount!");
+                    return null;
+                }
+
+                player.closeInventory();
+                attemptWithdrawal(player, amount);
                 return null;
             }
 
@@ -172,8 +172,8 @@ public class GUIBankerWithdraw extends HypixelInventoryGUI {
                     System.currentTimeMillis(), -amount, player.getUsername()));
 
             player.addCoins(amount);
-            player.sendMessage("§aYou have withdrawn §6" + StringUtility.decimalify(amount, 1) +
-                    " coins§a! You now have §6" + StringUtility.decimalify(bankData.getAmount(), 1) +
+            player.sendMessage("§aYou have withdrawn §6" + StringUtility.shortenNumberLowerK(amount) +
+                    " coins§a! You now have §6" + StringUtility.shortenNumberLowerK(bankData.getAmount()) +
                     " coins§a in your account.");
             return;
         }
@@ -203,8 +203,8 @@ public class GUIBankerWithdraw extends HypixelInventoryGUI {
                             System.currentTimeMillis(), -amount, player.getUsername()));
 
                     player.addCoins(amount);
-                    player.sendMessage("§aYou have withdrawn §6" + StringUtility.decimalify(amount, 1) +
-                            " coins§a! You now have §6" + StringUtility.decimalify(latestBankData.getAmount(), 1) +
+                    player.sendMessage("§aYou have withdrawn §6" + StringUtility.shortenNumberLowerK(amount) +
+                            " coins§a! You now have §6" + StringUtility.shortenNumberLowerK(latestBankData.getAmount()) +
                             " coins§a in your account.");
 
                     return latestBankData; // Return modified data to be propagated to all servers

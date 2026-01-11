@@ -392,6 +392,9 @@ public class SkyBlockDataHandler extends DataHandler {
         GEMS("gems", false, false, false,
                 DatapointInteger.class, new DatapointInteger("gems", 0)),
 
+        TRADE_DATA("trade_data", false, false, false,
+                DatapointTradeData.class, new DatapointTradeData("trade_data")),
+
         MUSEUM_DATA("museum_data", false, false, false,
                 DatapointMuseum.class, new DatapointMuseum("museum_data"),
                 (player, datapoint) -> {},

@@ -116,6 +116,38 @@ services:
     networks:
       - hypixel_network
 
+  hypixelcore_the_park:
+    image: game_server_prepared
+    container_name: hypixelcore_the_park
+    restart: "unless-stopped"
+    environment:
+      SERVICE_CMD: java -jar HypixelCore.jar SKYBLOCK_THE_PARK
+    depends_on:
+      proxy:
+        condition: service_healthy
+      game_server_builder:
+        condition: service_started
+    volumes:
+      - ./configuration:/app/configuration_files
+    networks:
+      - hypixel_network
+
+  hypixelcore_galatea:
+    image: game_server_prepared
+    container_name: hypixelcore_galatea
+    restart: "unless-stopped"
+    environment:
+      SERVICE_CMD: java -jar HypixelCore.jar SKYBLOCK_GALATEA
+    depends_on:
+      proxy:
+        condition: service_healthy
+      game_server_builder:
+        condition: service_started
+    volumes:
+      - ./configuration:/app/configuration_files
+    networks:
+      - hypixel_network
+
   prototype_lobby:
     image: game_server_prepared
     container_name: prototype_lobby

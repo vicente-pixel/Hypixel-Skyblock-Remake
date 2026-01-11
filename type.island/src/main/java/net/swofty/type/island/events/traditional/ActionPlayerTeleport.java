@@ -19,5 +19,6 @@ public class ActionPlayerTeleport implements HypixelEventClass {
         SharedInstance instance = player.getSkyBlockIsland().getSharedInstance().join();
         player.setInstance(instance, player.getRespawnPoint());
         player.teleport(player.getRespawnPoint());
+        player.setReadyForEvents();
     }
 }

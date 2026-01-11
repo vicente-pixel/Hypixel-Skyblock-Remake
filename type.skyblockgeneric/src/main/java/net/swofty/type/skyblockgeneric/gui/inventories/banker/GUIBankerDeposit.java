@@ -82,22 +82,22 @@ public class GUIBankerDeposit extends HypixelInventoryGUI {
             @Override
             public HypixelInventoryGUI onQueryFinish(String query, HypixelPlayer p) {
                 SkyBlockPlayer player = (SkyBlockPlayer) p;
-                try {
-                    double amount = Double.parseDouble(query);
-                    if (amount > player.getCoins()) {
-                        player.sendMessage("§cYou do not have that many coins to deposit!");
-                        return null;
-                    }
-                    if (amount <= 0) {
-                        player.sendMessage("§cYou cannot deposit that amount!");
-                        return null;
-                    }
-
-                    player.closeInventory();
-                    attemptDeposit(player, amount);
-                } catch (NumberFormatException ex) {
+                Double amount = StringUtility.parseNumberWithSuffix(query);
+                if (amount == null) {
                     player.sendMessage("§cThat is not a valid number!");
+                    return null;
                 }
+                if (amount > player.getCoins()) {
+                    player.sendMessage("§cYou do not have that many coins to deposit!");
+                    return null;
+                }
+                if (amount <= 0) {
+                    player.sendMessage("§cYou cannot deposit that amount!");
+                    return null;
+                }
+
+                player.closeInventory();
+                attemptDeposit(player, amount);
                 return null;
             }
 

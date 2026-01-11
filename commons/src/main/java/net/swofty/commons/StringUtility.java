@@ -122,6 +122,37 @@ public class StringUtility {
 		return String.valueOf(number); // Fallback, should not be reached
 	}
 
+	public static Double parseNumberWithSuffix(String raw) {
+		if (raw == null) return null;
+		String input = raw.trim().toLowerCase();
+		if (input.isEmpty()) return null;
+
+		input = input.replace(",", "");
+		double multiplier = 1.0;
+
+		char lastChar = input.charAt(input.length() - 1);
+		if (lastChar == 'k' || lastChar == 'm' || lastChar == 'b') {
+			input = input.substring(0, input.length() - 1).trim();
+			if (input.isEmpty()) return null;
+			if (lastChar == 'k') {
+				multiplier = 1_000d;
+			} else if (lastChar == 'm') {
+				multiplier = 1_000_000d;
+			} else {
+				multiplier = 1_000_000_000d;
+			}
+		}
+
+		try {
+			double value = Double.parseDouble(input);
+			double result = value * multiplier;
+			if (Double.isNaN(result) || Double.isInfinite(result)) return null;
+			return result;
+		} catch (NumberFormatException ex) {
+			return null;
+		}
+	}
+
 	public static String formatPurseAmount(double amount) {
 		if (amount < 1000) {
 			DecimalFormat df = new DecimalFormat("0.0");
